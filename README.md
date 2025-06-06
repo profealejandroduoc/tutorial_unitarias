@@ -15,7 +15,8 @@ Spring Initializr es una web que permite generar proyectos Spring Boot fácilmen
    * **Group:** com.pruebas
    * **Artifact:** unitarias
    * **Java:** 17 (o superior)
-![Ejemplo de Mascotas](docs/img/mascotas.jpg)
+
+![Captura de pantalla 2025-06-05 204631](https://github.com/user-attachments/assets/615d084e-8a82-43e4-8ef4-e7f2ea562147)
 
 3. Haz clic en **Add dependencies** y agrega:
 
