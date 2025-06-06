@@ -41,7 +41,7 @@ Tu aplicación necesita saber a qué base de datos conectarse para guardar los d
 * Abre el archivo `src/main/resources/application.properties` y agrega:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/mascotas_db?useSSL=false&serverTimezone=UTC
+spring.datasource.url=jdbc:mysql://localhost:3306/mascotas_db
 spring.datasource.username=root
 spring.datasource.password=
 spring.jpa.hibernate.ddl-auto=update
