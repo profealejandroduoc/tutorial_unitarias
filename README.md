@@ -24,7 +24,7 @@ Spring Initializr es una web que permite generar proyectos Spring Boot fácilmen
    * Spring Data JPA
    * MySQL Driver (o H2 para pruebas en memoria)
    * Lombok
-   * Spring Boot Starter Test
+
 4. Haz clic en **GENERATE** para descargar el proyecto.
 5. Descomprime el ZIP y ábrelo en tu IDE favorito (IntelliJ, Eclipse, VSCode, etc).
 
