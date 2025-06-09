@@ -236,7 +236,8 @@ Permiten asegurar que los métodos del servicio funcionan bien de forma aislada.
 
 **Pasos:**
 
-Ahora es momento de ocupar la carpeta de pruebas del proyecto
+Ahora es momento de ocupar la carpeta de pruebas del proyecto, para ello revisa la estructura de carpetas
+![mascotas](https://github.com/user-attachments/assets/ad5aa219-2c0e-49db-932e-2513560abd59)
 
 
 
