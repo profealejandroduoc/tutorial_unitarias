@@ -2,19 +2,13 @@
 
 ## 1. Creación del proyecto con Spring Initializr
 
-**¿Por qué?**
-Spring Initializr es una web que permite generar proyectos Spring Boot fácilmente y con las dependencias necesarias.
+
+En Spring Initializr configura las dependencias de tu proyecto Spring Boot 
 
 **Pasos:**
 
 1. Ingresa a [https://start.spring.io/](https://start.spring.io/)
 2. Completa los campos:
-
-   * **Project:** Maven
-   * **Language:** Java
-   * **Group:** com.pruebas
-   * **Artifact:** unitarias
-   * **Java:** 17 (o superior)
 
 ![Captura de pantalla 2025-06-05 204631](https://github.com/user-attachments/assets/615d084e-8a82-43e4-8ef4-e7f2ea562147)
 
@@ -22,7 +16,7 @@ Spring Initializr es una web que permite generar proyectos Spring Boot fácilmen
 
    * Spring Web
    * Spring Data JPA
-   * MySQL Driver (o H2 para pruebas en memoria)
+   * MySQL Driver
    * Lombok
 
 4. Haz clic en **GENERATE** para descargar el proyecto.
@@ -233,3 +227,18 @@ public class MascotaController {
 ```
 
 ---
+# ✅ CREACIÓN DE PRUEBAS UNITARIAS
+
+## 7. Pruebas Unitarias del Servicio
+
+**¿Por qué?**
+Permiten asegurar que los métodos del servicio funcionan bien de forma aislada.
+
+**Pasos:**
+
+Ahora es momento de ocupar la carpeta de pruebas del proyecto
+
+
+
+* Crea el archivo `MascotaServiceTest.java` en el paquete de servicio.
+
