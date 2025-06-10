@@ -237,7 +237,8 @@ Permiten asegurar que los métodos del servicio funcionan bien de forma aislada.
 **Pasos:**
 
 Ahora es momento de ocupar la carpeta de pruebas del proyecto, para ello revisa la estructura de carpetas
-![carpetas01](https://github.com/user-attachments/assets/89f21cb7-373c-4088-973b-abd81c0bfb09)
+![carpetas01](https://github.com/user-attachments/assets/45f2d143-9d78-4ab1-b6df-3ff11db7d41f)
+
 
 Para realizar las pruebas unitarias utilizamos la carpeta test, dentro de ella encontraremos una ruta similar a lo que hay dentro de main
 
