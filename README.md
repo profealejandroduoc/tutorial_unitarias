@@ -239,8 +239,233 @@ Permiten asegurar que los métodos del servicio funcionan bien de forma aislada.
 Ahora es momento de ocupar la carpeta de pruebas del proyecto, para ello revisa la estructura de carpetas
 ![carpetas01](https://github.com/user-attachments/assets/89f21cb7-373c-4088-973b-abd81c0bfb09)
 
+Para realizar las pruebas unitarias utilizamos la carpeta test, dentro de ella encontraremos una ruta similar a lo que hay dentro de main
+
+Probaremos la capa de servicio con pruebas unitarias
 
 
+# Estructura típica de una prueba unitaria
 
-* Crea el archivo `MascotaServiceTest.java` en el paquete de servicio.
+La mayoría de las pruebas unitarias, sin importar el framework (JUnit, pytest, unittest, Mocha, etc.), siguen esta estructura general:
 
+## 1. Preparación (Arrange / Setup)
+
+Se preparan los datos y el entorno necesarios para la prueba.
+
+Esto incluye crear objetos, definir variables de entrada y configurar mocks o dobles si es necesario.
+
+## 2. Ejecución (Act / Exercise)
+
+Se llama a la función o método que se desea probar con los datos preparados.
+
+## 3. Verificación (Assert)
+
+Se verifica el resultado obtenido comparándolo con el resultado esperado (con aserciones).
+
+Aquí se comprueba si la unidad de código cumple el comportamiento que debería.
+
+## 4. Limpieza (opcional) (Teardown)
+
+En algunos casos se realiza limpieza del entorno si la prueba ha modificado algo global o externo (base de datos, archivos, etc.).
+
+---
+
+## Ejemplo de estructura genérica
+
+```pseudo
+TestNombreDeLaFuncion
+    // 1. Preparación (Arrange)
+    Preparar datos de entrada
+    Configurar mocks o entorno si es necesario
+
+    // 2. Ejecución (Act)
+    resultado = FuncionAAProbar(datosDeEntrada)
+
+    // 3. Verificación (Assert)
+    Asegurarse de que resultado == resultadoEsperado
+
+    // 4. Limpieza (Teardown, opcional)
+    Restaurar entorno si es necesario
+```
+## Creamos nuestra prueba unitaria
+
+**Pasos:**
+
+* Crea el archivo `MascotaServiceTest.java` en el paquete de servicio. Copia y pega el siguiente código
+
+```java
+package com.pruebas.unitarias.service;
+
+import com.pruebas.unitarias.model.Mascota;
+import com.pruebas.unitarias.repository.MascotaRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
+class MascotaServiceTest {
+
+    @Mock
+    private MascotaRepository mascotaRepository;
+
+    @InjectMocks
+    private MascotaService mascotaService;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+
+    /* Test para guardar mascota en la capa servicio */
+    @Test
+    void testGuardarMascota() {
+        Mascota mascota = new Mascota(null, "Rex", "Perro", 5);
+        Mascota mascotaGuardada = new Mascota(1L, "Rex", "Perro", 5);
+        when(mascotaRepository.save(mascota)).thenReturn(mascotaGuardada);
+
+        Mascota resultado = mascotaService.guardarMascota(mascota);
+        assertThat(resultado.getId()).isEqualTo(1L);
+        verify(mascotaRepository).save(mascota);
+    }
+}
+```
+## Revisemos ahora nuestra prueba unitaria `MascotaServiceTest`
+
+---
+
+## 1. Definición de la Clase
+
+```java
+class MascotaServiceTest {
+```
+Define la clase de prueba unitaria para el servicio `MascotaService`. Por convención, las clases de prueba terminan en `Test`.
+
+---
+
+## 2. Declaración de Mocks y el Servicio
+
+```java
+@Mock
+private MascotaRepository mascotaRepository;
+
+@InjectMocks
+private MascotaService mascotaService;
+```
+
+* `@Mock`: Crea un mock del repositorio `MascotaRepository` usando Mockito. Un mock es un objeto simulado para pruebas.
+* `@InjectMocks`: Crea una instancia real de `MascotaService` e **inyecta** en ella el mock del repositorio. Así, el servicio utilizará el mock en lugar del repositorio real.
+
+---
+
+## 3. Inicialización de los Mocks
+
+```java
+@BeforeEach
+void setUp() {
+    MockitoAnnotations.openMocks(this);
+}
+```
+
+* `@BeforeEach`: Indica que este método se ejecuta **antes de cada prueba**.
+* `MockitoAnnotations.openMocks(this)`: Inicializa los mocks y realiza la inyección de dependencias. Es esencial para que Mockito funcione correctamente con JUnit 5.
+
+---
+
+## 4. Prueba Unitaria: `testGuardarMascota`
+
+```java
+@Test
+void testGuardarMascota() {
+    Mascota mascota = new Mascota(null, "Rex", "Perro", 5);
+    Mascota mascotaGuardada = new Mascota(1L, "Rex", "Perro", 5);
+    when(mascotaRepository.save(mascota)).thenReturn(mascotaGuardada);
+
+    Mascota resultado = mascotaService.guardarMascota(mascota);
+    assertThat(resultado.getId()).isEqualTo(1L);
+    verify(mascotaRepository).save(mascota);
+}
+```
+
+### Explicación paso a paso:
+
+1. **Preparación de Datos**
+
+   ```java
+   Mascota mascota = new Mascota(null, "Rex", "Perro", 5); // Se crea una mascota sin ID (simulando que es nueva).
+   Mascota mascotaGuardada = new Mascota(1L, "Rex", "Perro", 5);// Se crea una mascota con ID (simulando que ha sido guardada).
+   ```
+
+2. **Configuración del Mock**
+
+   ```java
+   when(mascotaRepository.save(mascota)).thenReturn(mascotaGuardada);
+   ```
+
+   * Se define el comportamiento del mock: **cuando** se llame a `save()` con la mascota, **devolverá** la mascota guardada con ID.
+
+3. **Llamada al Método a Probar**
+
+   ```java
+   Mascota resultado = mascotaService.guardarMascota(mascota);
+   ```
+
+   * Se invoca el método real del servicio, que debería llamar al repositorio.
+
+4. **Verificación del Resultado**
+
+   ```java
+   assertThat(resultado.getId()).isEqualTo(1L);
+   ```
+
+   * Se comprueba que el método retorne una mascota con ID igual a 1.
+
+5. **Verificación de la Interacción**
+
+   ```java
+   verify(mascotaRepository).save(mascota);
+   ```
+
+   * Se verifica que el método `save()` del repositorio fue realmente llamado con la mascota.
+
+---
+
+## 5. Resumen de la Estructura
+
+| Bloque                | Descripción                                                  |
+| --------------------- | ------------------------------------------------------------ |
+| `@Mock`               | Mock del repositorio para simular la capa de datos           |
+| `@InjectMocks`        | Servicio real con el mock inyectado                          |
+| `@BeforeEach`         | Inicializa los mocks antes de cada test                      |
+| Crear datos de prueba | Instancia de mascota nueva y mascota guardada simulada       |
+| `when...thenReturn`   | Define cómo responderá el mock al guardar                    |
+| Llamada a método      | Ejecuta el método a probar                                   |
+| `assertThat...`       | Valida que el resultado es el esperado                       |
+| `verify`              | Confirma que el método del repositorio fue realmente llamado |
+
+---
+
+## 6. ¿Por qué es importante esta prueba?
+
+Esta prueba unitaria permite asegurar que el método `guardarMascota()` de `MascotaService`:
+
+* Utiliza correctamente el repositorio.
+* Devuelve la mascota guardada con el ID asignado.
+* No requiere una base de datos real, ya que todo se simula con mocks.
+
+---
+
+## ¿Y quién me asegura que los datos guardados son realmente los guardados?
+
+Para ello se pueden agreagar más aserciones en la verificación de resultado 
+```java
+assertThat(resultado.getNombre()).isEqualTo("Rex");
+```
