@@ -466,7 +466,24 @@ Esta prueba unitaria permite asegurar que el método `guardarMascota()` de `Masc
 
 ## ¿Y quién me asegura que los datos guardados son realmente los guardados?
 
-Para ello se pueden agreagar más aserciones en la verificación de resultado 
+Para ello se pueden agreagar más aserciones en la verificación de resultado, por ejemplo:
 ```java
 assertThat(resultado.getNombre()).isEqualTo("Rex");
 ```
+
+## Vamos ahora con otro test...
+
+```java
+ @Test
+    void testListarMascotas() {
+        Mascota m1 = new Mascota(1L, "Rex", "Perro", 5);
+        Mascota m2 = new Mascota(2L, "Michi", "Gato", 2);
+        when(mascotaRepository.findAll()).thenReturn(Arrays.asList(m1, m2));
+
+        List<Mascota> resultado = mascotaService.listarMascotas();
+        assertThat(resultado).hasSize(2).contains(m1, m2);
+        verify(mascotaRepository).findAll();
+    }
+```
+**¿Puedes explicar el funcionamiento del test?**
+Si logras hacerlo intenta realizar los test para: Obtener mascota por Id y eliminar mascota. Este último al retornar vacío la clausula when puede puede resultar algo distinta. Investiga como debería escribirse la prueba.
