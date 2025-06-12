@@ -487,3 +487,214 @@ assertThat(resultado.getNombre()).isEqualTo("Rex");
 ```
 **¿Puedes explicar el funcionamiento del test?**
 Si logras hacerlo intenta realizar los test para: Obtener mascota por Id y eliminar mascota. Este último al retornar vacío la clausula when puede puede resultar algo distinta. Investiga como debería escribirse la prueba.
+
+# Vamos ahora por las pruebas de Controlador
+---
+## 8. Pruebas Unitarias del Controlador
+
+**¿Por qué?**
+Estas pruebas verifican que los endpoints del controlador funcionan bien y que el controlador delega correctamente en el servicio, usando MockMvc y simulando el servicio.
+
+**Pasos:**
+
+* Crea el archivo `MascotaControllerTest.java` en el paquete `controller` en el directorio de Test.
+
+```java
+package com.pruebas.unitarias.controller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pruebas.unitarias.model.Mascota;
+import com.pruebas.unitarias.service.MascotaService;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Arrays;
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(MascotaController.class)
+class MascotaControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private MascotaService mascotaService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Test
+    void testObtenerTodas() throws Exception {
+        Mascota m1 = new Mascota(1L, "Toby", "Perro", 3);
+        Mascota m2 = new Mascota(2L, "Michi", "Gato", 1);
+
+        Mockito.when(mascotaService.listarMascotas()).thenReturn(Arrays.asList(m1, m2));
+
+        mockMvc.perform(get("/api/mascotas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nombre").value("Toby"))
+                .andExpect(jsonPath("$[1].tipo").value("Gato"));
+    }
+}
+```
+
+# Revisemos las partes de  Pruebas Unitarias del Controlador `MascotaControllerTest.java`
+
+### Paquete y imports
+
+```java
+package com.pruebas.unitarias.controller;
+```
+- Define el paquete donde está la clase de prueba.
+
+---
+
+Los imports incluyen:
+
+- Clases para manejar JSON (`ObjectMapper`).
+- Clases del modelo y servicio de la aplicación (`Mascota`, `MascotaService`).
+- Frameworks de prueba: JUnit 5 (`@Test`), Mockito, y utilidades de Spring Boot para pruebas MVC (`@WebMvcTest`, `MockMvc`).
+- Utilidades estáticas para construir peticiones HTTP y validar respuestas.
+
+---
+
+### Anotación `@WebMvcTest`
+
+```java
+@WebMvcTest(MascotaController.class)
+```
+- Configura el entorno para probar solo la capa web (controlador).
+- No se carga todo el contexto de la aplicación.
+- Indica que se testeará el `MascotaController`.
+
+---
+
+### Clase de test y atributos inyectados
+
+```java
+@Autowired
+private MockMvc mockMvc;
+```
+- Permite simular peticiones HTTP a los endpoints del controlador sin necesidad de levantar un servidor.
+
+```java
+@MockBean
+private MascotaService mascotaService;
+```
+- Crea un mock del servicio para simular su comportamiento dentro del controlador.
+
+```java
+@Autowired
+private ObjectMapper objectMapper;
+```
+- Para convertir objetos Java a JSON y viceversa (útil en pruebas POST/PUT).
+
+---
+
+### Método de prueba: `testObtenerTodas`
+
+```java
+@Test
+void testObtenerTodas() throws Exception {
+```
+- Define un método de prueba con JUnit.
+
+---
+
+```java
+Mascota m1 = new Mascota(1L, "Toby", "Perro", 3);
+Mascota m2 = new Mascota(2L, "Michi", "Gato", 1);
+```
+- Crea dos instancias de `Mascota` para simular datos de prueba.
+
+---
+
+```java
+Mockito.when(mascotaService.listarMascotas()).thenReturn(Arrays.asList(m1, m2));
+```
+- Define el comportamiento esperado del mock: cuando se llame `listarMascotas()`, devolverá la lista con `m1` y `m2`.
+
+---
+
+```java
+mockMvc.perform(get("/api/mascotas"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].nombre").value("Toby"))
+        .andExpect(jsonPath("$[1].tipo").value("Gato"));
+```
+- Simula una petición GET al endpoint `/api/mascotas`.
+- Verifica que la respuesta HTTP sea 200 OK.
+- Comprueba que el JSON devuelto tenga:
+  - En la primera posición, un objeto con `nombre` = `"Toby"`.
+  - En la segunda posición, un objeto con `tipo` = `"Gato"`.
+
+---
+
+## Resumen
+
+- Esta prueba verifica que el controlador expone correctamente el endpoint para obtener todas las mascotas.
+- Utiliza un mock del servicio para aislar el test y no depender de la base de datos o lógica interna del servicio.
+- Usa `MockMvc` para simular las peticiones HTTP y validar la respuesta.
+- Permite garantizar que el controlador delega correctamente al servicio y construye la respuesta esperada.
+
+
+---
+
+## Ahora prueba con test para peticiones por POST
+
+```java
+@Test
+    void testCrearMascota() throws Exception {
+        Mascota nueva = new Mascota(null, "Toby", "Perro", 3);
+        Mascota guardada = new Mascota(1L, "Toby", "Perro", 3);
+
+        Mockito.when(mascotaService.guardarMascota(any(Mascota.class)))
+                .thenReturn(guardada);
+
+        mockMvc.perform(post("/api/mascotas")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(nueva)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.nombre").value("Toby"));
+    }
+```
+
+**Detalle paso a paso:**
+```java
+mockMvc.perform(post("/api/mascotas"))
+```
+Simula una petición HTTP POST al endpoint **/api/mascotas**. Se usa para enviar datos para crear un nuevo recurso (en este caso, una nueva mascota).
+```java
+.contentType(MediaType.APPLICATION_JSON)
+```
+Indica que el contenido que se envía en la petición es de tipo JSON. Esto configura el header HTTP Content-Type con el valor application/json.
+
+```java
+.content(objectMapper.writeValueAsString(nueva))
+```
+
+Convierte el objeto Java nueva a una cadena JSON usando ObjectMapper. El JSON resultante es el cuerpo (payload) que se envía en la petición POST.
+
+### Otro ejemplo para una mascota no existente a través de get
+
+```java
+@Test
+    void testObtenerPorIdNoExistente() throws Exception {
+        Mockito.when(mascotaService.obtenerMascotaPorId(99L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/mascotas/99"))
+                .andExpect(status().isNotFound());
+    }
+```
+Este test, verifica que la mascota solicitada no existe. Ahora que tiene varios ejemplos, **intenta crear las pruebas unitarias para cada petición del controlador**
